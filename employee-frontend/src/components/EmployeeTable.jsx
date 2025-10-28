@@ -1,62 +1,76 @@
+
 import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 
 export default function EmployeeTable({ employees, onEdit, onDelete }) {
   return (
     <>
-      {/* Desktop Table View */}
-      <div className="hidden lg:block bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Department</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Position</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Salary</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {employees.map((employee) => (
-              <tr key={employee.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {employee.firstName} {employee.lastName}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.department}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{employee.position}</td>
-                <td className="px-6 py-4 whitespace-nowrap">Rs {employee.salary.toLocaleString()}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(employee)}
-                      className="text-blue-600 hover:text-blue-800"
-                      aria-label="Edit employee"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => onDelete(employee.id)}
-                      className="text-red-600 hover:text-red-800"
-                      aria-label="Delete employee"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </td>
+      {/* Desktop Table View - Now appears at 'md' breakpoint and scrolls horizontally */}
+      <div className="hidden md:block bg-white rounded-lg shadow-md">
+        <div className="overflow-x-auto rounded-lg">
+          <table className="w-full">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Department</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Position</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Salary</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {employees.map((employee) => (
+                <tr key={employee.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-teal-100 text-gray-800">
+                      #{employee.id}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {employee.firstName} {employee.lastName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.department}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{employee.position}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">Rs {employee.salary.toLocaleString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => onEdit(employee)}
+                        className="text-pink-600 hover:text-pink-800"
+                        aria-label="Edit employee"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => onDelete(employee.id)}
+                        className="text-red-600 hover:text-red-800"
+                        aria-label="Delete employee"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Mobile Card View */}
-      <div className="lg:hidden space-y-4">
+      {/* Mobile Card View - Now hides at 'md' breakpoint */}
+      <div className="md:hidden space-y-4">
         {employees.map((employee) => (
           <div key={employee.id} className="bg-white rounded-lg shadow-md p-4">
             <div className="flex justify-between items-start mb-3">
               <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-teal-100 text-gray-800">
+                    #{employee.id}
+                  </span>
+                </div>
                 <h3 className="font-semibold text-lg text-gray-800">
                   {employee.firstName} {employee.lastName}
                 </h3>
@@ -65,7 +79,7 @@ export default function EmployeeTable({ employees, onEdit, onDelete }) {
               <div className="flex gap-2">
                 <button
                   onClick={() => onEdit(employee)}
-                  className="text-blue-600 hover:text-blue-800 p-2"
+                  className="text-pink-600 hover:text-pink-800 p-2"
                   aria-label="Edit employee"
                 >
                   <Edit2 size={18} />

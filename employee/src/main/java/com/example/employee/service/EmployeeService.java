@@ -55,10 +55,10 @@ public class EmployeeService {
     }
     
     public List<Employee> searchEmployees(String keyword) {
-        return employeeRepository.findByFirstNameContainingOrLastNameContaining(keyword, keyword);
+        return employeeRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(keyword, keyword);
     }
     
     public List<Employee> getEmployeesByDepartment(String department) {
-        return employeeRepository.findByDepartment(department);
+        return employeeRepository.findByDepartmentIgnoreCase(department);
     }
 }

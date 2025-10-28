@@ -1,15 +1,28 @@
+
 import React, { useState, useEffect } from 'react';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Filter, Hash } from 'lucide-react';
 import EmployeeTable from './EmployeeTable';
 import EmployeeModal from './EmployeeModal';
-import SearchBar from './SearchBar';
-import { fetchEmployees, createEmployee, updateEmployee, deleteEmployee } from '../services/employeeService';
+import { 
+  fetchEmployees, 
+  createEmployee, 
+  updateEmployee, 
+  deleteEmployee,
+  searchEmployees,
+  fetchEmployeesByDepartment,
+  fetchEmployeeById
+} from '../services/employeeService';
 
 export default function EmployeeManagement() {
   const [employees, setEmployees] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('all');
+  
   const [searchTerm, setSearchTerm] = useState('');
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [idFilter, setIdFilter] = useState('');
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -29,9 +42,13 @@ export default function EmployeeManagement() {
     try {
       const data = await fetchEmployees();
       setEmployees(data);
+      setActiveFilter('all');
     } catch (error) {
       console.error('Error fetching employees:', error);
     }
+    setSearchTerm('');
+    setDepartmentFilter('');
+    setIdFilter('');
   };
 
   const handleSubmit = async (e) => {
@@ -90,13 +107,58 @@ export default function EmployeeManagement() {
     setShowModal(false);
   };
 
-  const filteredEmployees = searchTerm
-    ? employees.filter(emp =>
-        emp.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : employees;
+  const handleSearch = async () => {
+    if (activeFilter === 'name' && searchTerm.trim()) {
+      try {
+        const data = await searchEmployees(searchTerm);
+        setEmployees(data);
+      } catch (error) {
+        console.error('Error searching employees:', error);
+      }
+    } else if (activeFilter === 'department' && departmentFilter.trim()) {
+      try {
+        const data = await fetchEmployeesByDepartment(departmentFilter);
+        setEmployees(data);
+      } catch (error) {
+        console.error('Error filtering by department:', error);
+      }
+    } else if (activeFilter === 'id' && idFilter.trim()) {
+      try {
+        const employee = await fetchEmployeeById(idFilter);
+        setEmployees([employee]);
+      } catch (error) {
+        console.error('Error fetching employee by ID:', error);
+        setEmployees([]);
+        alert('Employee not found with ID: ' + idFilter);
+      }
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const getCurrentInputValue = () => {
+    if (activeFilter === 'name') return searchTerm;
+    if (activeFilter === 'department') return departmentFilter;
+    if (activeFilter === 'id') return idFilter;
+    return '';
+  };
+
+  const handleInputChange = (value) => {
+    if (activeFilter === 'name') setSearchTerm(value);
+    else if (activeFilter === 'department') setDepartmentFilter(value);
+    else if (activeFilter === 'id') setIdFilter(value);
+  };
+
+  const getPlaceholder = () => {
+    if (activeFilter === 'name') return 'Search by name or email...';
+    if (activeFilter === 'department') return 'Filter by department...';
+    if (activeFilter === 'id') return 'Search by Employee ID...';
+    return 'Select a filter type...';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
@@ -105,17 +167,89 @@ export default function EmployeeManagement() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Employee Management System</h1>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+            className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-pink-500 to-teal-500 text-white px-4 py-2 rounded-full hover:from-pink-600 hover:to-teal-600 transition text-sm font-medium shadow-md ml-auto"
           >
-            <Plus size={20} />
+            <Plus size={16} />
             Add Employee
           </button>
         </div>
 
-        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        {/* Unified Search/Filter Bar */}
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+          <div className="flex flex-col gap-4">
+            {/* Filter Type Buttons */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button" // <-- Added this
+                onClick={() => setActiveFilter('name')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition text-sm font-medium ${
+                  activeFilter === 'name'
+                    ? 'bg-gradient-to-r from-pink-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Search size={16} />
+                Name/Email
+              </button>
+              <button
+                type="button" // <-- Added this
+                onClick={() => setActiveFilter('id')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition text-sm font-medium ${
+                  activeFilter === 'id'
+                    ? 'bg-gradient-to-r from-pink-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Hash size={16} />
+                ID
+              </button>
+              <button
+                type="button" // <-- Added this
+                onClick={() => setActiveFilter('department')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition text-sm font-medium ${
+                  activeFilter === 'department'
+                    ? 'bg-gradient-to-r from-pink-500 to-teal-500 text-white shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Filter size={16} />
+                Department
+              </button>
+            </div>
+
+            {/* Search Input and Actions */}
+            {activeFilter !== 'all' && (
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type={activeFilter === 'id' ? 'number' : 'text'}
+                  placeholder={getPlaceholder()}
+                  value={getCurrentInputValue()}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent text-sm"
+                />
+                <button
+                  type="button" // <-- Added this
+                  onClick={handleSearch}
+                  className="bg-gradient-to-r from-pink-500 to-teal-500 text-white px-5 py-2 rounded-full hover:from-pink-600 hover:to-teal-600 transition flex items-center gap-1.5 text-sm font-medium shadow-md w-full sm:w-auto justify-center"
+                >
+                  <Search size={16} />
+                  Search
+                </button>
+                <button
+                  type="button" // <-- Added this
+                  onClick={loadEmployees}
+                  className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-full hover:bg-gray-50 transition text-sm font-medium w-full sm:w-auto justify-center"
+                >
+                  Clear
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
         
         <EmployeeTable 
-          employees={filteredEmployees}
+          employees={employees} 
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

@@ -1,54 +1,3 @@
-
-// package com.example.employee.model;
-
-// import jakarta.persistence.*;
-// import jakarta.validation.constraints.Email;
-// import jakarta.validation.constraints.NotBlank;
-// import lombok.AllArgsConstructor;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
-
-// import java.time.LocalDate;
-
-// @Entity
-// @Table(name = "employees")
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
-// public class Employee {
-    
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
-    
-//     @NotBlank(message = "First name is required")
-//     @Column(nullable = false)
-//     private String firstName;
-    
-//     @NotBlank(message = "Last name is required")
-//     @Column(nullable = false)
-//     private String lastName;
-    
-//     @Email(message = "Email should be valid")
-//     @NotBlank(message = "Email is required")
-//     @Column(nullable = false, unique = true)
-//     private String email;
-    
-//     @Column(nullable = false)
-//     private String department;
-    
-//     @Column(nullable = false)
-//     private String position;
-    
-//     @Column(nullable = false)
-//     private Double salary;
-    
-//     @Column(nullable = false)
-//     private LocalDate hireDate;
-    
-//     @Column(nullable = false)
-//     private String phone;
-// }
 package com.example.employee.model;
 
 import java.time.LocalDate;
@@ -61,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "employees")
@@ -84,18 +34,23 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
     
+    @NotBlank(message = "Department is required")
     @Column(nullable = false)
     private String department;
     
+    @NotBlank(message = "Position is required")
     @Column(nullable = false)
     private String position;
     
+    @NotNull(message = "Salary is required")
     @Column(nullable = false)
     private Double salary;
-    
+
+    @NotNull(message = "Hire Date is required")
     @Column(nullable = false)
     private LocalDate hireDate;
     
+    @NotBlank(message = "Phone is required")
     @Column(nullable = false)
     private String phone;
 

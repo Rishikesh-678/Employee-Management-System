@@ -1,7 +1,13 @@
+
 import React from 'react';
 import { X } from 'lucide-react';
 
 export default function EmployeeModal({ editingEmployee, formData, setFormData, onSubmit, onClose }) {
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(e);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -14,7 +20,9 @@ export default function EmployeeModal({ editingEmployee, formData, setFormData, 
           </button>
         </div>
 
-        <form onSubmit={onSubmit}>
+        {/* CHANGE #1: Add the <form> tag here and pass the submit handler to it.
+        */}
+        <form onSubmit={handleFormSubmit}>
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -24,7 +32,7 @@ export default function EmployeeModal({ editingEmployee, formData, setFormData, 
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
+                  required // This will now work
                 />
               </div>
               <div>
@@ -34,17 +42,17 @@ export default function EmployeeModal({ editingEmployee, formData, setFormData, 
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
+                  required // This will now work
                 />
               </div>
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium mb-1">Email</label>
                 <input
-                  type="email"
+                  type="email" // Using type="email" also gives you email validation
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
+                  required // This will now work
                 />
               </div>
               <div className="sm:col-span-2">
@@ -54,8 +62,10 @@ export default function EmployeeModal({ editingEmployee, formData, setFormData, 
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required // This will now work
                 />
               </div>
+              {/* ...all your other inputs will also be validated... */}
               <div>
                 <label className="block text-sm font-medium mb-1">Department</label>
                 <input
@@ -100,21 +110,24 @@ export default function EmployeeModal({ editingEmployee, formData, setFormData, 
 
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4">
               <button
-                type="button"
+                type="button" // Good to be explicit that this is NOT a submit button
                 onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="w-full sm:w-auto px-5 py-2 border border-gray-300 rounded-full hover:bg-gray-50 text-sm font-medium"
               >
                 Cancel
               </button>
+              
+              {/* CHANGE #2: Change to type="submit" and remove the onClick.
+              */}
               <button
-                type="submit"
-                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                type="submit" 
+                className="w-full sm:w-auto px-5 py-2 bg-gradient-to-r from-pink-500 to-teal-500 text-white rounded-full hover:from-pink-600 hover:to-teal-600 shadow-md text-sm font-medium"
               >
                 {editingEmployee ? 'Update' : 'Create'}
               </button>
             </div>
           </div>
-        </form>
+        </form> {/* CHANGE #1: Close the <form> tag */}
       </div>
     </div>
   );
